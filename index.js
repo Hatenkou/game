@@ -67,7 +67,8 @@ const keys = {
    },
 
 
-}
+};
+let scrollOfset = 0;
 
 function animate() {
    requestAnimationFrame(animate)
@@ -86,11 +87,13 @@ function animate() {
       player.velocity.x = 0;
 
       if (keys.right.pressed) {
+         scrollOfset += 5;
          platforms.forEach((platform) => {
             platform.position.x -= 5;
          })
 
       } else if (keys.left.pressed) {
+         scrollOfset -= 5
          platforms.forEach((platform) => {
             platform.position.x += 5;
          })
@@ -106,7 +109,10 @@ function animate() {
          platform.position.x + platform.width) {
          player.velocity.y = 0
       }
-   })
+   });
+   if (scrollOfset > 2000) {
+      console.log("you win");
+   }
 };
 
 animate();
