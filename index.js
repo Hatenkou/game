@@ -1,3 +1,4 @@
+
 const canvas = document.querySelector('canvas');
 const canvasContext = canvas.getContext('2d');
 
@@ -55,7 +56,7 @@ class Platform {
 
 
 const player = new Player();
-const platforms = [new Platform({ x: 200, y: 100 }), new Platform({ x: 600, y: 300 })];
+const platforms = [new Platform({ x: 200, y: 700 }), new Platform({ x: 600, y: 450 }), new Platform({ x: 820, y: 400 }), new Platform({ x: 980, y: 600 }), new Platform({ x: 300, y: 400 })];
 
 
 const keys = {
