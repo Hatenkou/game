@@ -1,6 +1,7 @@
 const imgPlatform = './img/platf.png';
 const imgBackground = './img/bluemoon.png';
 const imgTree = './img/tree.png';
+const imgPlatformMin = './img/platfMin.png';
 const canvas = document.querySelector('canvas');
 const canvasContext = canvas.getContext('2d');
 
@@ -19,6 +20,7 @@ const gravity = 2;
 
 class Player {
    constructor() {
+      this.speed = 10;
       this.position = {
          x: 100,
          y: 100
@@ -32,7 +34,7 @@ class Player {
    }
 
    draw() {
-      canvasContext.fillStyle = "green"
+      canvasContext.fillStyle = "blue"
       canvasContext.fillRect(this.position.x, this.position.y, this.width, this.height);
    }
 
@@ -75,51 +77,16 @@ class GenericObject {
    }
 };
 let platFormImage = createImage(imgPlatform);
+let platFormMinImage = createImage(imgPlatformMin);
+
 let player = new Player();
 let platforms = [
-   new Platform({
-      x: -1,
-      y: 570,
-      image: platFormImage
-   }),
-   new Platform({
-      x: platFormImage.width * 2 - 3,
-      y: 570,
-      image: platFormImage
-   }),
-   new Platform({
-      x: platFormImage.width * 3 - 3,
-      y: 570,
-      image: platFormImage
-   }),
-   new Platform({
-      x: platFormImage.width - 3,
-      y: 250,
-      image: platFormImage
-   }),
 
 ];
 let backgroundImage = createImage(imgBackground);
 let treeImage = createImage(imgTree);
 let GenericObjects = [
-   new GenericObject({
-      x: 0,
-      y: 0,
-      image: backgroundImage
-   }), new GenericObject({
-      x: platFormImage.width - 2000,
-      y: 0,
-      image: backgroundImage
-   }), new GenericObject({
-      x: platFormImage.width + 1000,
-      y: 0,
-      image: backgroundImage
-   }),
-   new GenericObject({
-      x: 150,
-      y: 270,
-      image: treeImage
-   }),
+
 ];
 
 let keys = {
@@ -135,6 +102,7 @@ let keys = {
 let scrollOfset = 0;
 function init() {
    platFormImage = createImage(imgPlatform);
+   platFormMinImage = createImage(imgPlatformMin);
    player = new Player();
    platforms = [
       new Platform({
@@ -157,6 +125,28 @@ function init() {
          y: 250,
          image: platFormImage
       }),
+      new Platform({
+         x: platFormImage.width * 4 + 200,
+         y: 250,
+         image: platFormImage
+      }),
+
+      new Platform({
+         x: platFormImage.width * 5,
+         y: 570,
+         image: platFormImage
+      }),
+      new Platform({
+         x: platFormImage.width * 6,
+         y: 570,
+         image: platFormImage
+      }),
+      new Platform({
+         x: platFormImage.width * 6 + 500,
+         y: 270,
+         image: platFormMinImage
+      }),
+
 
    ];
    backgroundImage = createImage(imgBackground);
@@ -201,27 +191,31 @@ function animate() {
 
    //player move
    if (keys.right.pressed && player.position.x < 400) {
-      player.velocity.x = 5;
-   } else if (keys.left.pressed && player.position.x > 100) {
-      player.velocity.x = -5;
+      player.velocity.x = player.speed;
+   } else if ((keys.left.pressed && player.position.x > 100)
+      || keys.left.pressed && scrollOfset === 0
+      && player.position.x > 0
+   ) {
+      player.velocity.x = -player.speed;
    } else {
       player.velocity.x = 0;
 
       if (keys.right.pressed) {
-         scrollOfset += 5;
+         scrollOfset += player.speed;
          platforms.forEach((platform) => {
-            platform.position.x -= 5;
+            platform.position.x -= player.speed;
          })
          GenericObjects.forEach(genericObject => {
-            genericObject.position.x -= 3;
+            genericObject.position.x -= player.speed * 0.66;
          })
-      } else if (keys.left.pressed) {
-         scrollOfset -= 5
+      } else if (keys.left.pressed && scrollOfset > 0) {
+         scrollOfset -= player.speed;
+
          platforms.forEach((platform) => {
-            platform.position.x += 5;
+            platform.position.x += player.speed;
          })
          GenericObjects.forEach(genericObject => {
-            genericObject.position.x += 3;
+            genericObject.position.x += player.speed * 0.66;
          })
       }
    }
@@ -246,6 +240,7 @@ function animate() {
    }
 };
 
+init();
 animate();
 
 addEventListener('keydown', ({ keyCode, }) => {
@@ -266,7 +261,7 @@ addEventListener('keydown', ({ keyCode, }) => {
          break
       case 87:
          console.log("up");
-         player.velocity.y -= 20
+         player.velocity.y -= 30
          break
    }
 
@@ -289,7 +284,7 @@ addEventListener('keyup', ({ keyCode, }) => {
          break
       case 87:
          console.log("up");
-         player.velocity.y -= 20
+
          break
    }
 
