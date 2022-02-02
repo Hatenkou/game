@@ -1,9 +1,11 @@
 
 const canvas = document.querySelector('canvas');
 const canvasContext = canvas.getContext('2d');
+const imgPlatform = new Image();
+imgPlatform.src = "./img/platf.png"
 
-canvas.width = innerWidth;
-canvas.height = innerHeight;
+canvas.width = window.innerWidth;
+canvas.height = 576;
 
 console.log(canvasContext);
 
@@ -40,23 +42,26 @@ class Player {
 }
 
 class Platform {
-   constructor({ x, y }) {
+   constructor({ x, y, image }) {
       this.position = {
          x,
          y
       }
-      this.width = 200
-      this.height = 20
+      this.image = image;
+      this.width = image.width;
+      this.height = image.heightd;
    }
    draw() {
-      canvasContext.fillStyle = 'blue';
-      canvasContext.fillRect(this.position.x, this.position.y, this.width, this.height)
+      canvasContext.drawImage(this.image, this.position.x, this.position.y)
    }
 };
 
 
 const player = new Player();
-const platforms = [new Platform({ x: 200, y: 700 }), new Platform({ x: 600, y: 450 }), new Platform({ x: 820, y: 400 }), new Platform({ x: 980, y: 600 }), new Platform({ x: 300, y: 400 })];
+const platforms = [
+   new Platform({ x: -1, y: 470, image: imgPlatform }),
+   new Platform({ x: imgPlatform.width - 3, y: 470, image: imgPlatform }),
+];
 
 
 const keys = {
@@ -72,12 +77,13 @@ const keys = {
 let scrollOfset = 0;
 
 function animate() {
-   requestAnimationFrame(animate)
-   canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-   player.update();
+   requestAnimationFrame(animate);
+   canvasContext.fillStyle = 'white'
+   canvasContext.fillRect(0, 0, canvas.width, canvas.height);
    platforms.forEach(platform => {
       platform.draw();
    })
+   player.update();
 
    //player move
    if (keys.right.pressed && player.position.x < 400) {
@@ -139,7 +145,7 @@ addEventListener('keydown', ({ keyCode, }) => {
          player.velocity.y -= 20
          break
    }
-   console.log(keys.right.pressed);
+
 });
 
 addEventListener('keyup', ({ keyCode, }) => {
