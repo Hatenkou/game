@@ -90,6 +90,12 @@ const platforms = [
       y: 470,
       image: platFormImage
    }),
+   new Platform({
+      x: platFormImage.width - 3,
+      y: 150,
+      image: platFormImage
+   }),
+
 ];
 const backgroundImage = createImage(imgBackground);
 const treeImage = createImage(imgTree);
@@ -98,9 +104,17 @@ const GenericObjects = [
       x: 0,
       y: 0,
       image: backgroundImage
+   }), new GenericObject({
+      x: platFormImage.width - 2000,
+      y: 0,
+      image: backgroundImage
+   }), new GenericObject({
+      x: platFormImage.width + 1000,
+      y: 0,
+      image: backgroundImage
    }),
    new GenericObject({
-      x: 1,
+      x: 150,
       y: 170,
       image: treeImage
    }),
