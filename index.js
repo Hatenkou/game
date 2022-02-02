@@ -11,11 +11,11 @@ function createImage(imageSrc) {
 };
 
 canvas.width = window.innerWidth;
-canvas.height = 576;
+canvas.height = 676;
 
 console.log(canvasContext);
 
-const gravity = 1.5;
+const gravity = 2;
 
 class Player {
    constructor() {
@@ -43,7 +43,6 @@ class Player {
 
       if (this.position.y + this.height + this.velocity.y <= canvas.height)
          this.velocity.y += gravity
-      else this.velocity.y = 0
    }
 };
 
@@ -75,31 +74,34 @@ class GenericObject {
       canvasContext.drawImage(this.image, this.position.x, this.position.y)
    }
 };
-
-const platFormImage = createImage(imgPlatform);
-
-const player = new Player();
-const platforms = [
+let platFormImage = createImage(imgPlatform);
+let player = new Player();
+let platforms = [
    new Platform({
       x: -1,
-      y: 470,
+      y: 570,
+      image: platFormImage
+   }),
+   new Platform({
+      x: platFormImage.width * 2 - 3,
+      y: 570,
+      image: platFormImage
+   }),
+   new Platform({
+      x: platFormImage.width * 3 - 3,
+      y: 570,
       image: platFormImage
    }),
    new Platform({
       x: platFormImage.width - 3,
-      y: 470,
-      image: platFormImage
-   }),
-   new Platform({
-      x: platFormImage.width - 3,
-      y: 150,
+      y: 250,
       image: platFormImage
    }),
 
 ];
-const backgroundImage = createImage(imgBackground);
-const treeImage = createImage(imgTree);
-const GenericObjects = [
+let backgroundImage = createImage(imgBackground);
+let treeImage = createImage(imgTree);
+let GenericObjects = [
    new GenericObject({
       x: 0,
       y: 0,
@@ -115,12 +117,12 @@ const GenericObjects = [
    }),
    new GenericObject({
       x: 150,
-      y: 170,
+      y: 270,
       image: treeImage
    }),
 ];
 
-const keys = {
+let keys = {
    right: {
       pressed: false
    },
@@ -131,7 +133,58 @@ const keys = {
 
 };
 let scrollOfset = 0;
+function init() {
+   platFormImage = createImage(imgPlatform);
+   player = new Player();
+   platforms = [
+      new Platform({
+         x: -1,
+         y: 570,
+         image: platFormImage
+      }),
+      new Platform({
+         x: platFormImage.width * 2 - 3,
+         y: 570,
+         image: platFormImage
+      }),
+      new Platform({
+         x: platFormImage.width * 3 - 3,
+         y: 570,
+         image: platFormImage
+      }),
+      new Platform({
+         x: platFormImage.width - 3,
+         y: 250,
+         image: platFormImage
+      }),
 
+   ];
+   backgroundImage = createImage(imgBackground);
+   treeImage = createImage(imgTree);
+   GenericObjects = [
+      new GenericObject({
+         x: 0,
+         y: 0,
+         image: backgroundImage
+      }), new GenericObject({
+         x: platFormImage.width - 2000,
+         y: 0,
+         image: backgroundImage
+      }), new GenericObject({
+         x: platFormImage.width + 1000,
+         y: 0,
+         image: backgroundImage
+      }),
+      new GenericObject({
+         x: 150,
+         y: 270,
+         image: treeImage
+      }),
+   ];
+
+
+   scrollOfset = 0;
+};
 function animate() {
    requestAnimationFrame(animate);
    canvasContext.fillStyle = 'white'
@@ -182,8 +235,14 @@ function animate() {
          player.velocity.y = 0
       }
    });
+
+   //win condition
    if (scrollOfset > 2000) {
       console.log("you win");
+   }
+   //lose condition
+   if (player.position.y > canvas.height) {
+      init();
    }
 };
 
