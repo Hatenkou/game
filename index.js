@@ -1,8 +1,14 @@
-
+const imgPlatform = './img/platf.png';
+const imgBackground = './img/bluemoon.png';
+const imgTree = './img/tree.png';
 const canvas = document.querySelector('canvas');
 const canvasContext = canvas.getContext('2d');
-const imgPlatform = new Image();
-imgPlatform.src = "./img/platf.png"
+
+function createImage(imageSrc) {
+   const image = new Image();
+   image.src = imageSrc;
+   return image
+};
 
 canvas.width = window.innerWidth;
 canvas.height = 576;
@@ -39,7 +45,7 @@ class Player {
          this.velocity.y += gravity
       else this.velocity.y = 0
    }
-}
+};
 
 class Platform {
    constructor({ x, y, image }) {
@@ -55,14 +61,50 @@ class Platform {
       canvasContext.drawImage(this.image, this.position.x, this.position.y)
    }
 };
+class GenericObject {
+   constructor({ x, y, image }) {
+      this.position = {
+         x,
+         y
+      }
+      this.image = image;
+      this.width = image.width;
+      this.height = image.heightd;
+   }
+   draw() {
+      canvasContext.drawImage(this.image, this.position.x, this.position.y)
+   }
+};
 
+const platFormImage = createImage(imgPlatform);
 
 const player = new Player();
 const platforms = [
-   new Platform({ x: -1, y: 470, image: imgPlatform }),
-   new Platform({ x: imgPlatform.width - 3, y: 470, image: imgPlatform }),
+   new Platform({
+      x: -1,
+      y: 470,
+      image: platFormImage
+   }),
+   new Platform({
+      x: platFormImage.width - 3,
+      y: 470,
+      image: platFormImage
+   }),
 ];
-
+const backgroundImage = createImage(imgBackground);
+const treeImage = createImage(imgTree);
+const GenericObjects = [
+   new GenericObject({
+      x: 0,
+      y: 0,
+      image: backgroundImage
+   }),
+   new GenericObject({
+      x: 1,
+      y: 170,
+      image: treeImage
+   }),
+];
 
 const keys = {
    right: {
@@ -80,6 +122,11 @@ function animate() {
    requestAnimationFrame(animate);
    canvasContext.fillStyle = 'white'
    canvasContext.fillRect(0, 0, canvas.width, canvas.height);
+
+   GenericObjects.forEach(genericObject => {
+      genericObject.draw()
+   });
+
    platforms.forEach(platform => {
       platform.draw();
    })
@@ -98,13 +145,17 @@ function animate() {
          platforms.forEach((platform) => {
             platform.position.x -= 5;
          })
-
+         GenericObjects.forEach(genericObject => {
+            genericObject.position.x -= 3;
+         })
       } else if (keys.left.pressed) {
          scrollOfset -= 5
          platforms.forEach((platform) => {
             platform.position.x += 5;
          })
-
+         GenericObjects.forEach(genericObject => {
+            genericObject.position.x += 3;
+         })
       }
    }
    //platfor collosion detection
