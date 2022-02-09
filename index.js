@@ -1,7 +1,9 @@
-const imgPlatform = './img/platf.png';
-const imgBackground = './img/bluemoon.png';
-const imgTree = './img/tree.png';
-const imgPlatformMin = './img/platfMin.png';
+const imgPlatform = './img/platform.png';
+const imgBackground = './img/bg.png';
+const imgSpriteRunLeft = './img/spriteRunLeft.png';
+const imgSpriteRunRight = './img/spriteRunRight.png';
+const imgSpriteStandLeft = './img/spriteStandLeft.png';
+const imgSpriteStandRight = './img/spriteStandRight.png';
 const canvas = document.querySelector('canvas');
 const canvasContext = canvas.getContext('2d');
 
@@ -29,16 +31,52 @@ class Player {
          x: 0,
          y: 0
       }
-      this.width = 30
-      this.height = 30
+      this.width = 66
+      this.height = 150
+      this.image = createImage(imgSpriteStandRight)
+      this.frames = 0
+      this.sprites = {
+         stand: {
+            right: createImage(imgSpriteStandRight),
+            left: createImage(imgSpriteStandLeft),
+            cropWidth: 177,
+            width: 66
+         },
+         run: {
+            right: createImage(imgSpriteRunRight),
+            left: createImage(imgSpriteRunLeft),
+            cropWidth: 341,
+            width: 127.875
+         }
+      }
+      this.currentSprite = this.sprites.stand.right;
+      this.currentCropWidth = 177
    }
 
    draw() {
-      canvasContext.fillStyle = "blue"
-      canvasContext.fillRect(this.position.x, this.position.y, this.width, this.height);
-   }
+      canvasContext.drawImage(
+         this.currentSprite,
+         this.currentCropWidth * this.frames,
+         0,
+         this.currentCropWidth,
+         400,
+         this.position.x,
+         this.position.y,
+         this.width,
+         this.height
+      )
+   };
 
    update() {
+      this.frames++
+
+      if (this.frames > 59 && (this.currentSprite ===
+         this.sprites.stand.right || this.currentSprite === this.sprites.stand.left)
+      ) this.frames = 0
+      else if (this.frames > 29 && (this.currentSprite ===
+         this.sprites.run.right || this.currentSprite === this.sprites.run.left)
+      ) this.frames = 0
+
       this.draw()
       this.position.y += this.velocity.y
       this.position.x += this.velocity.x
@@ -77,14 +115,12 @@ class GenericObject {
    }
 };
 let platFormImage = createImage(imgPlatform);
-let platFormMinImage = createImage(imgPlatformMin);
 
 let player = new Player();
 let platforms = [
 
 ];
 let backgroundImage = createImage(imgBackground);
-let treeImage = createImage(imgTree);
 let GenericObjects = [
 
 ];
@@ -102,74 +138,56 @@ let keys = {
 let scrollOfset = 0;
 function init() {
    platFormImage = createImage(imgPlatform);
-   platFormMinImage = createImage(imgPlatformMin);
    player = new Player();
    platforms = [
       new Platform({
          x: -1,
-         y: 570,
+         y: 620,
          image: platFormImage
       }),
       new Platform({
          x: platFormImage.width * 2 - 3,
-         y: 570,
+         y: 620,
          image: platFormImage
       }),
       new Platform({
          x: platFormImage.width * 3 - 3,
-         y: 570,
+         y: 620,
          image: platFormImage
       }),
       new Platform({
          x: platFormImage.width - 3,
-         y: 250,
+         y: 350,
          image: platFormImage
       }),
       new Platform({
          x: platFormImage.width * 4 + 200,
-         y: 250,
+         y: 350,
          image: platFormImage
       }),
 
       new Platform({
          x: platFormImage.width * 5,
-         y: 570,
+         y: 620,
          image: platFormImage
       }),
       new Platform({
          x: platFormImage.width * 6,
-         y: 570,
+         y: 620,
          image: platFormImage
       }),
-      new Platform({
-         x: platFormImage.width * 6 + 500,
-         y: 270,
-         image: platFormMinImage
-      }),
+
 
 
    ];
    backgroundImage = createImage(imgBackground);
-   treeImage = createImage(imgTree);
    GenericObjects = [
       new GenericObject({
          x: 0,
          y: 0,
          image: backgroundImage
-      }), new GenericObject({
-         x: platFormImage.width - 2000,
-         y: 0,
-         image: backgroundImage
-      }), new GenericObject({
-         x: platFormImage.width + 1000,
-         y: 0,
-         image: backgroundImage
-      }),
-      new GenericObject({
-         x: 150,
-         y: 270,
-         image: treeImage
-      }),
+      })
+
    ];
 
 
@@ -206,7 +224,7 @@ function animate() {
             platform.position.x -= player.speed;
          })
          GenericObjects.forEach(genericObject => {
-            genericObject.position.x -= player.speed * 0.66;
+            genericObject.position.x;
          })
       } else if (keys.left.pressed && scrollOfset > 0) {
          scrollOfset -= player.speed;
@@ -215,7 +233,7 @@ function animate() {
             platform.position.x += player.speed;
          })
          GenericObjects.forEach(genericObject => {
-            genericObject.position.x += player.speed * 0.66;
+            genericObject.position.x;
          })
       }
    }
@@ -244,11 +262,14 @@ init();
 animate();
 
 addEventListener('keydown', ({ keyCode, }) => {
+
    switch (keyCode) {
       case 65:
          console.log("left");
          keys.left.pressed = true;
-
+         player.currentSprite = player.sprites.run.left
+         player.currentCropWidth = player.sprites.run.cropWidth
+         player.width = player.sprites.run.width
          break
       case 83:
          console.log("down");
@@ -257,6 +278,9 @@ addEventListener('keydown', ({ keyCode, }) => {
       case 68:
          console.log("right");
          keys.right.pressed = true;
+         player.currentSprite = player.sprites.run.right
+         player.currentCropWidth = player.sprites.run.cropWidth
+         player.width = player.sprites.run.width
 
          break
       case 87:
@@ -272,6 +296,9 @@ addEventListener('keyup', ({ keyCode, }) => {
       case 65:
          console.log("left");
          keys.left.pressed = false;
+         player.currentSprite = player.sprites.stand.left
+         player.currentCropWidth = player.sprites.stand.cropWidth
+         player.width = player.sprites.stand.width
 
          break
       case 83:
@@ -281,6 +308,9 @@ addEventListener('keyup', ({ keyCode, }) => {
       case 68:
          console.log("right");
          keys.right.pressed = false;
+         player.currentSprite = player.sprites.stand.right
+         player.currentCropWidth = player.sprites.stand.cropWidth
+         player.width = player.sprites.stand.width
          break
       case 87:
          console.log("up");
