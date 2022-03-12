@@ -1,9 +1,14 @@
 const imgPlatform = './img/platform.png';
+const imgMiniPlatform = './img/miniPlt.png';
 const imgBackground = './img/bg.png';
 const imgSpriteRunLeft = './img/spriteRunLeft.png';
 const imgSpriteRunRight = './img/spriteRunRight.png';
 const imgSpriteStandLeft = './img/spriteStandLeft.png';
 const imgSpriteStandRight = './img/spriteStandRight.png';
+const imgBgPlanet = './img/bg/bgPlanet.png'
+const imgBgPlanetOne = './img/bg/bgPlanet1.png'
+const imgBgPlanetTwo = './img/bg/bgPlanet2.png'
+
 const canvas = document.querySelector('canvas');
 const canvasContext = canvas.getContext('2d');
 
@@ -16,7 +21,7 @@ function createImage(imageSrc) {
 canvas.width = window.innerWidth;
 canvas.height = 676;
 
-console.log(canvasContext);
+
 
 const gravity = 2;
 
@@ -114,14 +119,39 @@ class GenericObject {
       canvasContext.drawImage(this.image, this.position.x, this.position.y)
    }
 };
+class BackgroundObject {
+   constructor({ x, y, image }) {
+      this.position = {
+         x,
+         y
+      }
+      this.image = image;
+      this.width = image.width;
+      this.height = image.heightd;
+   }
+   draw() {
+      canvasContext.drawImage(this.image, this.position.x, this.position.y)
+   }
+};
 let platFormImage = createImage(imgPlatform);
+let MiniplatFormImage = createImage(imgMiniPlatform);
 
 let player = new Player();
 let platforms = [
 
 ];
+
+
 let backgroundImage = createImage(imgBackground);
+let BgPlanetImage = createImage(imgBgPlanet);
+let BgPlanetOneImage = createImage(imgBgPlanetOne);
+let BgPlanetTwoImage = createImage(imgBgPlanetTwo);
+
+
 let GenericObjects = [
+
+];
+let BackgroundObjects = [
 
 ];
 
@@ -176,17 +206,61 @@ function init() {
          y: 620,
          image: platFormImage
       }),
+      new Platform({
+         x: platFormImage.width * 8,
+         y: 620,
+         image: MiniplatFormImage
+      }),
+      new Platform({
+         x: platFormImage.width * 9,
+         y: 520,
+         image: MiniplatFormImage
+      }),
+      new Platform({
+         x: platFormImage.width * 11,
+         y: 420,
+         image: MiniplatFormImage
+      }), new Platform({
+         x: platFormImage.width * 12,
+         y: 620,
+         image: platFormImage
+      }), new Platform({
+         x: platFormImage.width * 13 - 3,
+         y: 620,
+         image: platFormImage
+      }),
 
 
 
    ];
-   backgroundImage = createImage(imgBackground);
-   GenericObjects = [
-      new GenericObject({
+
+   BackgroundObjects = [
+      new BackgroundObject({
          x: 0,
          y: 0,
          image: backgroundImage
-      })
+      }
+      )
+   ];
+
+   GenericObjects = [
+
+      new GenericObject({
+         x: 2800,
+         y: 0,
+         image: BgPlanetImage
+      }),
+      new GenericObject({
+         x: 25,
+         y: 200,
+         image: BgPlanetOneImage
+      }),
+      new GenericObject({
+         x: 1600,
+         y: -300,
+         image: BgPlanetTwoImage
+      }),
+
 
    ];
 
@@ -198,9 +272,14 @@ function animate() {
    canvasContext.fillStyle = 'white'
    canvasContext.fillRect(0, 0, canvas.width, canvas.height);
 
+   BackgroundObjects.forEach(bgObject => {
+      bgObject.draw()
+   });
+
    GenericObjects.forEach(genericObject => {
       genericObject.draw()
    });
+
 
    platforms.forEach(platform => {
       platform.draw();
@@ -224,7 +303,7 @@ function animate() {
             platform.position.x -= player.speed;
          })
          GenericObjects.forEach(genericObject => {
-            genericObject.position.x;
+            genericObject.position.x -= 3;
          })
       } else if (keys.left.pressed && scrollOfset > 0) {
          scrollOfset -= player.speed;
@@ -233,7 +312,7 @@ function animate() {
             platform.position.x += player.speed;
          })
          GenericObjects.forEach(genericObject => {
-            genericObject.position.x;
+            genericObject.position.x += 3;
          })
       }
    }
