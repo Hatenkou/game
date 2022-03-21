@@ -5,6 +5,7 @@ const imgSpriteRunLeft = './img/spriteRunLeft.png';
 const imgSpriteRunRight = './img/spriteRunRight.png';
 const imgSpriteStandLeft = './img/spriteStandLeft.png';
 const imgSpriteStandRight = './img/spriteStandRight.png';
+const imgSpriteGoomba = './img/spriteGoomba.png';
 const imgBgPlanet = './img/bg/bgPlanet.png'
 const imgBgPlanetOne = './img/bg/bgPlanet1.png'
 const imgBgPlanetTwo = './img/bg/bgPlanet2.png'
@@ -145,19 +146,36 @@ class Goomba {
          x: velocity.x,
          y: velocity.y,
       };
-      this.width = 50
-      this.height = 50
+      this.width = 43.33,
+         this.height = 50,
+         this.image = createImage(imgSpriteGoomba),
+         this.frames = 0
+
    }
    draw() {
-      canvasContext.fillStyle = 'red'
-      canvasContext.fillRect(
+      //  canvasContext.fillStyle = 'red'
+      //  canvasContext.fillRect(
+      //      this.position.x,
+      //     this.position.y,
+      //     this.width,
+      //     this.height,
+      //   )
+      canvasContext.drawImage(
+         this.image,
+         130 * this.frames,
+         0,
+         130,
+         150,
          this.position.x,
          this.position.y,
          this.width,
-         this.height,
+         this.height
       )
+
    }
    update() {
+      this.frames++
+      if (this.frames >= 58) this.frames = 0
       this.draw()
       this.position.x += this.velocity.x
       this.position.y += this.velocity.y
