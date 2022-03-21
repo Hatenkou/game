@@ -137,7 +137,10 @@ class BackgroundObject {
    }
 };
 class Goomba {
-   constructor({ position, velocity }) {
+   constructor({ position, velocity, distance = {
+      limit: 50,
+      traveled: 0
+   } }) {
       this.position = {
          x: position.x,
          y: position.y,
@@ -150,6 +153,8 @@ class Goomba {
          this.height = 50,
          this.image = createImage(imgSpriteGoomba),
          this.frames = 0
+
+      this.distance = distance
 
    }
    draw() {
@@ -175,6 +180,15 @@ class Goomba {
 
       if (this.position.y + this.height + this.velocity.y <= canvas.height)
          this.velocity.y += gravity
+
+      //walk the goomba back and four
+      this.distance.traveled += Math.abs(this.velocity.x)
+
+      if (this.distance.traveled > this.distance.limit) {
+         this.distance.traveled = 0
+         this.velocity.x = -this.velocity.x
+      }
+
    }
 };
 class Partcle {
@@ -272,13 +286,18 @@ function init() {
    goombas = [
       new Goomba({
          position: {
-            x: 440,
+            x: 520,
             y: 100,
          },
          velocity: {
             x: -0.3,
             y: 0,
+         },
+         distance: {
+            limit: 100,
+            traveled: 0
          }
+
       }),
    ];
    particles = [
