@@ -141,11 +141,11 @@ class Goomba {
       this.position = {
          x: position.x,
          y: position.y,
-      };
+      }
       this.velocity = {
          x: velocity.x,
          y: velocity.y,
-      };
+      }
       this.width = 43.33,
          this.height = 50,
          this.image = createImage(imgSpriteGoomba),
@@ -153,13 +153,6 @@ class Goomba {
 
    }
    draw() {
-      //  canvasContext.fillStyle = 'red'
-      //  canvasContext.fillRect(
-      //      this.position.x,
-      //     this.position.y,
-      //     this.width,
-      //     this.height,
-      //   )
       canvasContext.drawImage(
          this.image,
          130 * this.frames,
@@ -184,6 +177,41 @@ class Goomba {
          this.velocity.y += gravity
    }
 };
+class Partcle {
+   constructor({ position, velocity, radius }) {
+      this.position = {
+         x: position.x,
+         y: position.y
+      }
+      this.velocity = {
+         x: velocity.x,
+         y: velocity.y
+      }
+      this.radius = radius
+      this.ttl = 300
+   }
+   draw() {
+      canvasContext.beginPath()
+      canvasContext.arc(
+         this.position.x,
+         this.position.y,
+         this.radius, 0,
+         Math.PI * 2, false)
+      canvasContext.fillStyle = pickRandomWord(colors)
+      canvasContext.fill()
+      canvasContext.closePath()
+
+   }
+   update() {
+      this.ttl--
+      this.draw()
+      this.position.x += this.velocity.x
+      this.position.y += this.velocity.y
+      if (this.position.y + this.radius + this.velocity.y <= canvas.height)
+         this.velocity.y += gravity * 0.4
+   }
+}
+
 // img
 let platFormImage = createImage(imgPlatform);
 let MiniplatFormImage = createImage(imgMiniPlatform);
@@ -191,12 +219,14 @@ let backgroundImage = createImage(imgBackground);
 let BgPlanetImage = createImage(imgBgPlanet);
 let BgPlanetOneImage = createImage(imgBgPlanetOne);
 let BgPlanetTwoImage = createImage(imgBgPlanetTwo);
+let colors = ["Red", "Orange", "Yellow", "Green", "Blue", "Purple"];
 
 let player = new Player();
 let GenericObjects = [];
 let BackgroundObjects = [];
 let platforms = [];
 let goombas = [];
+let particles = [];
 
 
 let keys = {
@@ -209,6 +239,11 @@ let keys = {
 
 
 };
+
+function pickRandomWord(words) {
+   return words[Math.floor(Math.random() * words.length)];
+};
+
 let scrollOfset = 0;
 function isOnTopOfPlatform({ object, platform }) {
    return (object.position.y + object.height <= platform.position.y
@@ -221,6 +256,12 @@ function collosionTop({ objectOne, objectTwo }) {
       && objectOne.position.y + objectOne.height + objectOne.velocity.y >= objectTwo.position.y
       && objectOne.position.x + objectOne.width >= objectTwo.position.x
       && objectOne.position.x <= objectTwo.position.x + objectTwo.width)
+};
+function isOnTopOfPlatformCircle({ object, platform }) {
+   return (object.position.y + object.radius <= platform.position.y
+      && object.position.y + object.radius + object.velocity.y >= platform.position.y
+      && object.position.x + object.radius >= platform.position.x
+      && object.position.x <= platform.position.x + platform.width)
 };
 
 
@@ -239,6 +280,9 @@ function init() {
             y: 0,
          }
       }),
+   ];
+   particles = [
+
    ];
    platforms = [
       new Platform({
@@ -358,10 +402,25 @@ function animate() {
 
    goombas.forEach((goomba, index) => {
       goomba.update();
+
+      //goomba stomp
       if (collosionTop({
          objectOne: player,
          objectTwo: goomba
       })) {
+         for (let i = 0; i < 50; i++) {
+            particles.push(new Partcle({
+               position: {
+                  x: goomba.position.x + goomba.width / 2,
+                  y: goomba.position.y + goomba.height / 2
+               },
+               velocity: {
+                  x: (Math.random() - 0.5) * 5,
+                  y: (Math.random() - 0.5) * 15,
+               },
+               radius: Math.random() * 3
+            }))
+         }
          player.velocity.y -= 30
          goombas.splice(index, 1)
       } else if (
@@ -372,6 +431,10 @@ function animate() {
          player.position.x <= goomba.position.x + goomba.width
       ) init()
    })
+
+   particles.forEach((particle) => {
+      particle.update();
+   });
 
    player.update();
 
@@ -397,6 +460,9 @@ function animate() {
          goombas.forEach((goomba) => {
             goomba.position.x -= player.speed;
          });
+         particles.forEach((particle) => {
+            particle.position.x -= player.speed;
+         });
       } else if (keys.left.pressed && scrollOfset > 0) {
          scrollOfset -= player.speed;
 
@@ -409,6 +475,9 @@ function animate() {
          goombas.forEach((goomba) => {
             goomba.position.x += player.speed;
          })
+         particles.forEach((particle) => {
+            particle.position.x += player.speed;
+         });
 
       }
    }
@@ -420,6 +489,18 @@ function animate() {
       })) {
          player.velocity.y = 0
       }
+      //particles bounce
+      particles.forEach((particle, index) => {
+         if (isOnTopOfPlatformCircle({
+            object: particle,
+            platform
+         })) {
+            particle.velocity.y = -particle.velocity.y * 0.9
+            if (particle.radius - 0.4 < 0) particles.splice(index, 1)
+            else particle.radius -= 0.4
+         }
+         if (particle.ttl < 0) particles.splice(index, 1)
+      })
 
       goombas.forEach(goomba => {
          if (isOnTopOfPlatform({
@@ -428,8 +509,10 @@ function animate() {
          })
          )
             goomba.velocity.y = 0
-      })
+      });
    });
+
+
 
    //win condition
    if (scrollOfset > 3000) {
