@@ -18,6 +18,7 @@ function createImage(imageSrc) {
    return image
 };
 
+
 canvas.width = window.innerWidth;
 canvas.height = 676;
 
@@ -80,7 +81,8 @@ class Player {
       ) this.frames = 0
       else if (this.frames > 29 && (this.currentSprite ===
          this.sprites.run.right || this.currentSprite === this.sprites.run.left)
-      ) this.frames = 0
+      )
+         this.frames = 0
 
       this.draw()
       this.position.y += this.velocity.y
@@ -133,27 +135,51 @@ class BackgroundObject {
       canvasContext.drawImage(this.image, this.position.x, this.position.y)
    }
 };
+class Goomba {
+   constructor({ position, velocity }) {
+      this.position = {
+         x: position.x,
+         y: position.y,
+      };
+      this.velocity = {
+         x: velocity.x,
+         y: velocity.y,
+      };
+      this.width = 50
+      this.height = 50
+   }
+   draw() {
+      canvasContext.fillStyle = 'red'
+      canvasContext.fillRect(
+         this.position.x,
+         this.position.y,
+         this.width,
+         this.height,
+      )
+   }
+   update() {
+      this.draw()
+      this.position.x += this.velocity.x
+      this.position.y += this.velocity.y
+
+      if (this.position.y + this.height + this.velocity.y <= canvas.height)
+         this.velocity.y += gravity
+   }
+};
+// img
 let platFormImage = createImage(imgPlatform);
 let MiniplatFormImage = createImage(imgMiniPlatform);
-
-let player = new Player();
-let platforms = [
-
-];
-
-
 let backgroundImage = createImage(imgBackground);
 let BgPlanetImage = createImage(imgBgPlanet);
 let BgPlanetOneImage = createImage(imgBgPlanetOne);
 let BgPlanetTwoImage = createImage(imgBgPlanetTwo);
 
+let player = new Player();
+let GenericObjects = [];
+let BackgroundObjects = [];
+let platforms = [];
+let goombas = [];
 
-let GenericObjects = [
-
-];
-let BackgroundObjects = [
-
-];
 
 let keys = {
    right: {
@@ -166,9 +192,36 @@ let keys = {
 
 };
 let scrollOfset = 0;
+function isOnTopOfPlatform({ object, platform }) {
+   return (object.position.y + object.height <= platform.position.y
+      && object.position.y + object.height + object.velocity.y >= platform.position.y
+      && object.position.x + object.width >= platform.position.x
+      && object.position.x <= platform.position.x + platform.width)
+};
+function collosionTop({ objectOne, objectTwo }) {
+   return (objectOne.position.y + objectOne.height <= objectTwo.position.y
+      && objectOne.position.y + objectOne.height + objectOne.velocity.y >= objectTwo.position.y
+      && objectOne.position.x + objectOne.width >= objectTwo.position.x
+      && objectOne.position.x <= objectTwo.position.x + objectTwo.width)
+};
+
+
 function init() {
    platFormImage = createImage(imgPlatform);
+
    player = new Player();
+   goombas = [
+      new Goomba({
+         position: {
+            x: 440,
+            y: 100,
+         },
+         velocity: {
+            x: -0.3,
+            y: 0,
+         }
+      }),
+   ];
    platforms = [
       new Platform({
          x: -1,
@@ -283,7 +336,25 @@ function animate() {
 
    platforms.forEach(platform => {
       platform.draw();
+   });
+
+   goombas.forEach((goomba, index) => {
+      goomba.update();
+      if (collosionTop({
+         objectOne: player,
+         objectTwo: goomba
+      })) {
+         player.velocity.y -= 30
+         goombas.splice(index, 1)
+      } else if (
+         player.position.x + player.width >= goomba.position.x
+         &&
+         player.position.y + player.height >= goomba.position.y
+         &&
+         player.position.x <= goomba.position.x + goomba.width
+      ) init()
    })
+
    player.update();
 
    //player move
@@ -296,39 +367,54 @@ function animate() {
       player.velocity.x = -player.speed;
    } else {
       player.velocity.x = 0;
-
+      // scrolling code
       if (keys.right.pressed) {
          scrollOfset += player.speed;
          platforms.forEach((platform) => {
             platform.position.x -= player.speed;
-         })
+         });
          GenericObjects.forEach(genericObject => {
             genericObject.position.x -= 3;
-         })
+         });
+         goombas.forEach((goomba) => {
+            goomba.position.x -= player.speed;
+         });
       } else if (keys.left.pressed && scrollOfset > 0) {
          scrollOfset -= player.speed;
 
          platforms.forEach((platform) => {
             platform.position.x += player.speed;
-         })
+         });
          GenericObjects.forEach(genericObject => {
             genericObject.position.x += 3;
+         });
+         goombas.forEach((goomba) => {
+            goomba.position.x += player.speed;
          })
+
       }
    }
    //platfor collosion detection
    platforms.forEach((platform) => {
-      if (player.position.y + player.height <=
-         platform.position.y && player.position.y + player.height + player.velocity.y >=
-         platform.position.y && player.position.x + player.width >=
-         platform.position.x && player.position.x <=
-         platform.position.x + platform.width) {
+      if (isOnTopOfPlatform({
+         object: player,
+         platform
+      })) {
          player.velocity.y = 0
       }
+
+      goombas.forEach(goomba => {
+         if (isOnTopOfPlatform({
+            object: goomba,
+            platform
+         })
+         )
+            goomba.velocity.y = 0
+      })
    });
 
    //win condition
-   if (scrollOfset > 2000) {
+   if (scrollOfset > 3000) {
       console.log("you win");
    }
    //lose condition
