@@ -1,3 +1,10 @@
+import {
+   createImage,
+   isOnTopOfPlatform,
+   collosionTop,
+   isOnTopOfPlatformCircle
+} from './js/utils.js'
+
 const imgPlatform = './img/platform.png';
 const imgMiniPlatform = './img/miniPlt.png';
 const imgBackground = './img/bg.png';
@@ -13,17 +20,8 @@ const imgBgPlanetTwo = './img/bg/bgPlanet2.png'
 const canvas = document.querySelector('canvas');
 const canvasContext = canvas.getContext('2d');
 
-function createImage(imageSrc) {
-   const image = new Image();
-   image.src = imageSrc;
-   return image
-};
-
-
 canvas.width = window.innerWidth;
 canvas.height = 676;
-
-
 
 const gravity = 2;
 
@@ -61,6 +59,7 @@ class Player {
    }
 
    draw() {
+
       canvasContext.drawImage(
          this.currentSprite,
          this.currentCropWidth * this.frames,
@@ -157,6 +156,7 @@ class Goomba {
 
    }
    draw() {
+
       canvasContext.drawImage(
          this.image,
          130 * this.frames,
@@ -254,27 +254,6 @@ let keys = {
 
 
 };
-
-
-function isOnTopOfPlatform({ object, platform }) {
-   return (object.position.y + object.height <= platform.position.y
-      && object.position.y + object.height + object.velocity.y >= platform.position.y
-      && object.position.x + object.width >= platform.position.x
-      && object.position.x <= platform.position.x + platform.width)
-};
-function collosionTop({ objectOne, objectTwo }) {
-   return (objectOne.position.y + objectOne.height <= objectTwo.position.y
-      && objectOne.position.y + objectOne.height + objectOne.velocity.y >= objectTwo.position.y
-      && objectOne.position.x + objectOne.width >= objectTwo.position.x
-      && objectOne.position.x <= objectTwo.position.x + objectTwo.width)
-};
-function isOnTopOfPlatformCircle({ object, platform }) {
-   return (object.position.y + object.radius <= platform.position.y
-      && object.position.y + object.radius + object.velocity.y >= platform.position.y
-      && object.position.x + object.radius >= platform.position.x
-      && object.position.x <= platform.position.x + platform.width)
-};
-
 
 function init() {
    platFormImage = createImage(imgPlatform);
@@ -599,7 +578,6 @@ function animate() {
       init();
    }
 };
-
 init();
 animate();
 
