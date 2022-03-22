@@ -93,7 +93,6 @@ class Player {
          this.velocity.y += gravity
    }
 };
-
 class Platform {
    constructor({ x, y, image }) {
       this.position = {
@@ -234,7 +233,9 @@ let BgPlanetImage = createImage(imgBgPlanet);
 let BgPlanetOneImage = createImage(imgBgPlanetOne);
 let BgPlanetTwoImage = createImage(imgBgPlanetTwo);
 let colors = ["Red", "Orange", "Yellow", "Green", "Blue", "Purple"];
-
+function pickRandomWord(words) {
+   return words[Math.floor(Math.random() * words.length)];
+};
 let player = new Player();
 let GenericObjects = [];
 let BackgroundObjects = [];
@@ -242,7 +243,7 @@ let platforms = [];
 let goombas = [];
 let particles = [];
 
-
+let scrollOfset = 0;
 let keys = {
    right: {
       pressed: false
@@ -254,11 +255,7 @@ let keys = {
 
 };
 
-function pickRandomWord(words) {
-   return words[Math.floor(Math.random() * words.length)];
-};
 
-let scrollOfset = 0;
 function isOnTopOfPlatform({ object, platform }) {
    return (object.position.y + object.height <= platform.position.y
       && object.position.y + object.height + object.velocity.y >= platform.position.y
@@ -297,8 +294,68 @@ function init() {
             limit: 100,
             traveled: 0
          }
+      }),
+      new Goomba({
+         position: {
+            x: 920,
+            y: 570,
+         },
+         velocity: {
+            x: -1,
+            y: 0,
+         },
+         distance: {
+            limit: 200,
+            traveled: 10
+         }
 
       }),
+      new Goomba({
+         position: {
+            x: 1380,
+            y: 570,
+         },
+         velocity: {
+            x: -0.5,
+            y: 0,
+         },
+         distance: {
+            limit: 100,
+            traveled: 10
+         }
+
+      }),
+      new Goomba({
+         position: {
+            x: 2300,
+            y: 570,
+         },
+         velocity: {
+            x: -2.5,
+            y: 0,
+         },
+         distance: {
+            limit: 400,
+            traveled: 10
+         }
+
+      }),
+      new Goomba({
+         position: {
+            x: 2450,
+            y: 570,
+         },
+         velocity: {
+            x: -0.5,
+            y: 0,
+         },
+         distance: {
+            limit: 150,
+            traveled: 10
+         }
+
+      }),
+
    ];
    particles = [
 
@@ -534,7 +591,7 @@ function animate() {
 
 
    //win condition
-   if (scrollOfset > 3000) {
+   if (scrollOfset > 4450) {
       console.log("you win");
    }
    //lose condition
