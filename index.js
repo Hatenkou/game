@@ -245,6 +245,9 @@ let particles = [];
 
 let scrollOfset = 0;
 let keys = {
+   up: {
+      pressed: false
+   },
    right: {
       pressed: false
    },
@@ -387,7 +390,7 @@ function init() {
          image: MiniplatFormImage
       }),
       new Platform({
-         x: platFormImage.width * 11,
+         x: platFormImage.width * 11 - 40,
          y: 420,
          image: MiniplatFormImage
       }), new Platform({
@@ -593,7 +596,8 @@ addEventListener('keydown', ({ keyCode, }) => {
          break
       case 83:
          console.log("down");
-         player.velocity.y += 20
+         if (player.position.y > 680)
+            player.velocity.y = +20
          break
       case 68:
          console.log("right");
@@ -605,7 +609,9 @@ addEventListener('keydown', ({ keyCode, }) => {
          break
       case 87:
          console.log("up");
-         player.velocity.y -= 30
+
+         if (player.velocity.y === 0) player.velocity.y = -40
+
          break
    }
 
@@ -623,7 +629,8 @@ addEventListener('keyup', ({ keyCode, }) => {
          break
       case 83:
          console.log("down");
-         player.velocity.y += 20
+         if (player.position.y > 680)
+            player.velocity.y = +20
          break
       case 68:
          console.log("right");
