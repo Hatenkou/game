@@ -1,3 +1,5 @@
+//path 1.0
+
 import {
    createImage,
    isOnTopOfPlatform,
