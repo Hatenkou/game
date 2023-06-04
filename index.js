@@ -584,65 +584,115 @@ function animate() {
 init();
 animate();
 
-addEventListener('keydown', ({ keyCode, }) => {
+const btnLeft = document.getElementById('btnLeft');
+const btnRight = document.getElementById('btnRight');
+const btnUp = document.getElementById('btnUp');
 
+// Змінні для відстежування стану кнопок
+let leftPressed = false;
+let rightPressed = false;
+let upPressed = false;
+
+// Додавання обробників подій для кнопок
+btnLeft.addEventListener('mousedown', () => {
+   leftPressed = true;
+   simulateKeyPress(65); // Симулювати натискання клавіші з кодом 65 (A)
+});
+
+btnLeft.addEventListener('mouseup', () => {
+   leftPressed = false;
+   simulateKeyUp(65); // Симулювати відпускання клавіші з кодом 65 (A)
+});
+
+btnRight.addEventListener('mousedown', () => {
+   rightPressed = true;
+   simulateKeyPress(68); // Симулювати натискання клавіші з кодом 68 (D)
+});
+
+btnRight.addEventListener('mouseup', () => {
+   rightPressed = false;
+   simulateKeyUp(68); // Симулювати відпускання клавіші з кодом 68 (D)
+});
+
+btnUp.addEventListener('mousedown', () => {
+   upPressed = true;
+   simulateKeyPress(87); // Симулювати натискання клавіші з кодом 87 (W)
+});
+
+btnUp.addEventListener('mouseup', () => {
+   upPressed = false;
+   simulateKeyUp(87); // Симулювати відпускання клавіші з кодом 87 (W)
+});
+
+// Симуляція натискання клавіші
+function simulateKeyPress(keyCode) {
+   const event = new KeyboardEvent('keydown', { keyCode });
+   document.dispatchEvent(event);
+}
+
+// Симуляція відпускання клавіші
+function simulateKeyUp(keyCode) {
+   const event = new KeyboardEvent('keyup', { keyCode });
+   document.dispatchEvent(event);
+}
+
+// Обробка події натискання клавіші
+function handleKeyDown({ keyCode }) {
    switch (keyCode) {
       case 65:
          console.log("left");
          keys.left.pressed = true;
-         player.currentSprite = player.sprites.run.left
-         player.currentCropWidth = player.sprites.run.cropWidth
-         player.width = player.sprites.run.width
-         break
+         player.currentSprite = player.sprites.run.left;
+         player.currentCropWidth = player.sprites.run.cropWidth;
+         player.width = player.sprites.run.width;
+         break;
       case 83:
          console.log("down");
          if (player.position.y > 680)
-            player.velocity.y = +20
-         break
+            player.velocity.y = +20;
+         break;
       case 68:
          console.log("right");
          keys.right.pressed = true;
-         player.currentSprite = player.sprites.run.right
-         player.currentCropWidth = player.sprites.run.cropWidth
-         player.width = player.sprites.run.width
-
-         break
+         player.currentSprite = player.sprites.run.right;
+         player.currentCropWidth = player.sprites.run.cropWidth;
+         player.width = player.sprites.run.width;
+         break;
       case 87:
          console.log("up");
-
-         if (player.velocity.y === 0) player.velocity.y = -40
-
-         break
+         if (player.velocity.y === 0) player.velocity.y = -40;
+         break;
    }
+}
 
-});
-
-addEventListener('keyup', ({ keyCode, }) => {
+// Обробка події відпускання клавіші
+function handleKeyUp({ keyCode }) {
    switch (keyCode) {
       case 65:
          console.log("left");
          keys.left.pressed = false;
-         player.currentSprite = player.sprites.stand.left
-         player.currentCropWidth = player.sprites.stand.cropWidth
-         player.width = player.sprites.stand.width
-
-         break
+         player.currentSprite = player.sprites.stand.left;
+         player.currentCropWidth = player.sprites.stand.cropWidth;
+         player.width = player.sprites.stand.width;
+         break;
       case 83:
          console.log("down");
          if (player.position.y > 680)
-            player.velocity.y = +20
-         break
+            player.velocity.y = +20;
+         break;
       case 68:
          console.log("right");
          keys.right.pressed = false;
-         player.currentSprite = player.sprites.stand.right
-         player.currentCropWidth = player.sprites.stand.cropWidth
-         player.width = player.sprites.stand.width
-         break
+         player.currentSprite = player.sprites.stand.right;
+         player.currentCropWidth = player.sprites.stand.cropWidth;
+         player.width = player.sprites.stand.width;
+         break;
       case 87:
          console.log("up");
-
-         break
+         break;
    }
+}
 
-})
+// Додавання обробників подій клавіш
+document.addEventListener('keydown', handleKeyDown);
+document.addEventListener('keyup', handleKeyUp);
