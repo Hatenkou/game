@@ -584,6 +584,7 @@ function animate() {
 init();
 animate();
 
+// Отримання посилань на кнопки
 const btnLeft = document.getElementById('btnLeft');
 const btnRight = document.getElementById('btnRight');
 const btnUp = document.getElementById('btnUp');
